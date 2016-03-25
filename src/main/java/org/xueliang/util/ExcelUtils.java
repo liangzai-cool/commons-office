@@ -1,23 +1,66 @@
 package org.xueliang.util;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 
-import vms.common.util.ValidateUtil;
-
+/**
+ * 读取Excel，将其转为JSONArray
+ * @author XueLiang
+ * @since 2016-03-26 01:38
+ */
 public class ExcelUtils {
 	
-	/** 用来记录日志 */
+	/** 用来记录日志 **/
 	private final static Log log = LogFactory.getLog(ExcelUtils.class);
+	
+	private final static String EXT_XLS = ".xls";
+	private final static String EXT_XLSX = ".xlsx";
+	private final static DecimalFormat df = new DecimalFormat("00");
+	
+	/**
+	 * 指定路径，将Excel转成JSONArray
+	 * @param pathname
+	 * @return
+	 * @throws IOException
+	 */
+	public static JSONArray toJSONArray(String pathname) throws IOException {
+		File file = new File(pathname);
+		return toJSONArray(file);
+	}
+	
+	/**
+	 * 指定文件对象，将Excel转成JSONArray
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public static JSONArray toJSONArray(File file) throws IOException {
+		ExcelUtils excelUtils = new ExcelUtils();
+		return excelUtils.excelToJSONArray(file);
+	}
+	
+	/**
+	 * 将指定的Excel转成JSONArray
+	 * @param workbook
+	 * @return
+	 */
+	public static JSONArray toJSONArray(Workbook workbook) {
+		ExcelUtils excelUtils = new ExcelUtils();
+		return excelUtils.excelToJSONArray(workbook);
+	}
 	
 	/**
 	 * 将Excel转成JSONArray
@@ -25,110 +68,126 @@ public class ExcelUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public JSONArray excelToJSONArray(InputStream inputStream) throws IOException {
-		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(inputStream);
-		hssfWorkbook.close();
-		return excelToJSONArray(hssfWorkbook);
+	public JSONArray excelToJSONArray(File file) throws IOException {
+		String fileName = file.getName();
+		String ext = fileName.substring(fileName.indexOf("."));
+		Workbook workbook = null;
+		InputStream inputStream = new FileInputStream(file);
+		if (EXT_XLSX.equalsIgnoreCase(ext)) {
+			workbook = new XSSFWorkbook(inputStream);  
+		} else if (EXT_XLS.equalsIgnoreCase(ext)) {
+			workbook = new HSSFWorkbook(inputStream);
+		}
+		inputStream.close();
+		if (workbook == null) {
+			throw new IllegalArgumentException("invalid excel: " + fileName);
+		}
+		workbook.close();
+		return excelToJSONArray(workbook);
 	}
 	
 	/**
 	 * 将Excel转成JSONArray
-	 * @param hssfWorkbook
+	 * @param workbook
 	 * @return
 	 */
-	public JSONArray excelToJSONArray(HSSFWorkbook hssfWorkbook) {
-		JSONArray jsonWorkbookArray = new JSONArray();
-		for (int i = 0, len = hssfWorkbook.getNumberOfSheets(); i < len; i++) {
-			HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(i);
-			JSONArray jsonSheetArray = sheetToJSONArray(hssfSheet);
-			jsonWorkbookArray.put(jsonSheetArray);
+	public JSONArray excelToJSONArray(Workbook workbook) {
+		JSONArray jsonExcel = new JSONArray();
+		for (int i = 0, len = workbook.getNumberOfSheets(); i < len; i++) {
+			Sheet sheet = workbook.getSheetAt(i);
+			JSONArray jsonSheet = sheetToJSONArray(sheet);
+			jsonExcel.put(jsonSheet);
 		}
-		return jsonWorkbookArray;
+		return jsonExcel;
 	}
 	
 	/**
 	 * 将指定的表格，转成JSONArray
-	 * @param hssfSheet
+	 * @param sheet
 	 * @return
 	 */
-	public JSONArray sheetToJSONArray(HSSFSheet hssfSheet) {
-		JSONArray jsonRowArray = new JSONArray();
-		for (int i = 0, len = hssfSheet.getLastRowNum(); i < len; i++) {
-			HSSFRow hssfRow = hssfSheet.getRow(i);
-			if (ValidateUtil.isNull(hssfRow)) {
+	public JSONArray sheetToJSONArray(Sheet sheet) {
+		JSONArray jsonSheet = new JSONArray();
+		for (int i = 0, len = sheet.getLastRowNum(); i < len; i++) {
+			Row row = sheet.getRow(i);
+			if (row == null) {	//跳过空行
 				continue;
 			}
-			JSONArray jsonRow = rowToJSONArray(hssfRow);
-			jsonRowArray.put(jsonRow);
+			JSONArray jsonRow = rowToJSONArray(row);
+			jsonSheet.put(jsonRow);
 		}
-		return jsonRowArray;
+		return jsonSheet;
 	}
 	
 	/**
 	 * 将指定的行转成JSONArray
-	 * @param hssfRow
+	 * @param row
 	 * @return
 	 */
-	public JSONArray rowToJSONArray(HSSFRow hssfRow) {
-		JSONArray jsonCellArray = new JSONArray();
-		for (int i = 0, len = hssfRow.getLastCellNum(); i < len; i++) {
-			Object object = getValue(hssfRow, i);
-			jsonCellArray.put(object);
+	public JSONArray rowToJSONArray(Row row) {
+		JSONArray jsonRow = new JSONArray();
+		for (int i = 0, len = row.getLastCellNum(); i < len; i++) {
+			Object object = getValue(row, i);
+			jsonRow.put(object);
 		}
-		return jsonCellArray;
+		return jsonRow;
 	}
 	
 	/**
-	 * 根据坐标获取单元格的值
-	 * 
+	 * 根据坐标获取单元格内的数据
 	 * @param rowIndex 行索引(从0开始)
 	 * @param colIndex 列索引(从0开始)
-	 * @return 值
+	 * @return 单元格内的数据
 	 */
-	public Object getValue(HSSFSheet sheet, int rowIndex, int colIndex) {
-		HSSFCell hssfCell = sheet.getRow(rowIndex).getCell(colIndex);
-		return getValue(hssfCell);
-	}
-	
-	public Object getValue(HSSFRow row, int colIndex) {
-		HSSFCell hssfCell = row.getCell(colIndex);
-		return getValue(hssfCell);
+	public Object getValue(Sheet sheet, int rowIndex, int colIndex) {
+		Cell cell = sheet.getRow(rowIndex).getCell(colIndex);
+		return getValue(cell);
 	}
 	
 	/**
-	 * 获取指定单元格的值
-	 * @param hssfCell
+	 * 获取指定的行中，指定列的单元格内的数据
+	 * @param row
+	 * @param colIndex
 	 * @return
 	 */
-	public Object getValue(HSSFCell hssfCell) {
+	public Object getValue(Row row, int colIndex) {
+		Cell cell = row.getCell(colIndex);
+		return getValue(cell);
+	}
+	
+	/**
+	 * 获取指定单元格内的数据
+	 * @param cell
+	 * @return
+	 */
+	public Object getValue(Cell cell) {
 		Object cellValue = "";
-		int type = typeOfCell(hssfCell);
+		int type = typeOfCell(cell);
 		switch (type) {
-			case HSSFCell.CELL_TYPE_STRING:								//数
-				cellValue = hssfCell.getStringCellValue();
+			case Cell.CELL_TYPE_STRING:								//数
+				cellValue = cell.getStringCellValue();
 				break;
-			case HSSFCell.CELL_TYPE_NUMERIC:							//布尔类型
-				DecimalFormat df = new DecimalFormat("00");
-				cellValue = df.format(hssfCell.getNumericCellValue());
+			case Cell.CELL_TYPE_NUMERIC:							//布尔类型
+				cellValue = df.format(cell.getNumericCellValue());
 				break;
-			case HSSFCell.CELL_TYPE_BOOLEAN:							//错误类型
-				cellValue = hssfCell.getBooleanCellValue();
+			case Cell.CELL_TYPE_BOOLEAN:							//错误类型
+				cellValue = cell.getBooleanCellValue();
 				break;
-			case HSSFCell.CELL_TYPE_ERROR:								//公式
-				cellValue = hssfCell.getErrorCellValue();
+			case Cell.CELL_TYPE_ERROR:								//公式
+				cellValue = cell.getErrorCellValue();
 				break;
-			case HSSFCell.CELL_TYPE_FORMULA:							//空白
-				cellValue = hssfCell.getNumericCellValue();
+			case Cell.CELL_TYPE_FORMULA:							//空白
+				cellValue = cell.getNumericCellValue();
 				break;
-			case HSSFCell.CELL_TYPE_BLANK:
+			case Cell.CELL_TYPE_BLANK:
 				break;
 			default:
 				try {
-					cellValue = hssfCell.getDateCellValue();
+					cellValue = cell.getDateCellValue();
 				} catch (NullPointerException e) {
 					log.debug("null on getDateCellValue");
 				} catch (Exception e) {
-					
+					log.debug("null on getDateCellValue: " + e.getMessage());
 				}
 				break;
 		}
@@ -136,25 +195,24 @@ public class ExcelUtils {
 	}
 	
 	/**
-	 * 根据单元格的坐标，获取其类型
-	 * 
+	 * 获取指定坐标的单元格的其类型
 	 * @param rowIndex
 	 * @param colIndex
 	 * @return
 	 */
-	public int typeOfCell(HSSFSheet sheet, int rowIndex, int colIndex) {
+	public int typeOfCell(Sheet sheet, int rowIndex, int colIndex) {
 		return typeOfCell(sheet.getRow(rowIndex).getCell(colIndex));
 	}
 	
 	/**
 	 * 获取单元格的类型
-	 * @param hssfCell
+	 * @param cell
 	 * @return
 	 */
-	public int typeOfCell(HSSFCell hssfCell) {
-		if (ValidateUtil.isNull(hssfCell)) {
+	public int typeOfCell(Cell cell) {
+		if (cell == null) {
 			return -1;
 		}
-		return hssfCell.getCellType();
+		return cell.getCellType();
 	}
 }

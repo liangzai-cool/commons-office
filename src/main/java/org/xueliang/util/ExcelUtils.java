@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import vms.common.util.ValidateUtil;
 
 public class ExcelUtils {
+	
 	/** 用来记录日志 */
 	private final static Log log = LogFactory.getLog(ExcelUtils.class);
 	
@@ -52,7 +53,7 @@ public class ExcelUtils {
 	 */
 	public JSONArray sheetToJSONArray(HSSFSheet hssfSheet) {
 		JSONArray jsonRowArray = new JSONArray();
-		for (int i = 0; i <= hssfSheet.getLastRowNum(); i++) {
+		for (int i = 0, len = hssfSheet.getLastRowNum(); i < len; i++) {
 			HSSFRow hssfRow = hssfSheet.getRow(i);
 			if (ValidateUtil.isNull(hssfRow)) {
 				continue;

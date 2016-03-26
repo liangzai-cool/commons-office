@@ -70,7 +70,7 @@ public class ExcelUtils {
 	 */
 	public JSONArray excelToJSONArray(File file) throws IOException {
 		String fileName = file.getName();
-		String ext = fileName.substring(fileName.indexOf("."));
+		String ext = fileName.substring(fileName.lastIndexOf("."));
 		Workbook workbook = null;
 		InputStream inputStream = new FileInputStream(file);
 		if (EXT_XLSX.equalsIgnoreCase(ext)) {

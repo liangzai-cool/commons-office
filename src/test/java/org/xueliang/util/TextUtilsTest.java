@@ -13,12 +13,4 @@ public class TextUtilsTest {
 		Map map = TextUtils.toMapFromUrl("http://o6ztar7bn.bkt.clouddn.com/02_shop.txt");
 		System.out.println(new JSONObject(map));
 	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Test
-	public void toMapFromUrlTest2() throws Exception {
-		Map map = TextUtils.toMapFromUrl("http://o6ztar7bn.bkt.clouddn.com/02_shop.txt");
-		new JSONObject(map);
-		System.out.println();
-	}
 }

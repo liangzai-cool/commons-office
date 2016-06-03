@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.xueliang</groupId>
-  <artifactId>commons-excel</artifactId>
+  <artifactId>commons-office</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -15,6 +15,48 @@
   </properties>
   
   <dependencies>
+  
+<!--     <dependency>
+      <groupId>vms.common2</groupId>
+      <artifactId>vms.common2</artifactId>
+      <version>2.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/vms.common2.jar</systemPath>
+    </dependency> -->
+    
+<!--     <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.1</version>
+    </dependency> -->
+    
+<!--     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>integration</artifactId>
+      <version>1.7.9</version>
+    </dependency> -->
+  
+    <!-- jaxen -->
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1.6</version>
+    </dependency>
+  
+    <!-- dom4j -->
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    
+    <!-- javacsv -->
+    <dependency>
+      <groupId>net.sourceforge.javacsv</groupId>
+      <artifactId>javacsv</artifactId>
+      <version>2.0</version>
+    </dependency>
+  
     <!-- poi hssf 用于解析excel -->
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -37,11 +79,11 @@
     </dependency>
     
     <!-- json -->
-    <dependency>
+<!--     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>20160212</version>
-    </dependency>
+    </dependency> -->
     
     <!-- test -->
     <dependency>
@@ -51,4 +93,17 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+          <excludeTransitive>false</excludeTransitive>
+          <stripVersion>true</stripVersion>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

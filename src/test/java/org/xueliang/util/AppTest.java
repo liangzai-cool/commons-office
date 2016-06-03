@@ -1,4 +1,4 @@
-package org.xueliang.poi;
+package org.xueliang.util;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

@@ -1,9 +1,9 @@
-package org.xueliang.util;
+package org.xueliang.commons.office.util;
 
 import java.io.IOException;
 
 import org.junit.Test;
-import org.xueliang.util.CSVUtils;
+import org.xueliang.commons.office.util.CSVUtils;
 
 public class CSVUtilsTest {
 

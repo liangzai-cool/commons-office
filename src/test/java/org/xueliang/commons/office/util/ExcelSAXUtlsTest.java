@@ -1,11 +1,11 @@
-package org.xueliang.util;
+package org.xueliang.commons.office.util;
 
 import java.io.File;
 
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.junit.Test;
-import org.xueliang.util.ExcelSAXUtls;
+import org.xueliang.commons.office.util.ExcelSAXUtils;
 
 public class ExcelSAXUtlsTest {
 
@@ -18,7 +18,7 @@ public class ExcelSAXUtlsTest {
 		String path4 = "C:\\Users\\XueLiang\\Desktop\\论文基础数据-PART III.xlsx";
 		File file = new File(path4);
 		OPCPackage opcPackage = OPCPackage.open(file.getPath(), PackageAccess.READ);
-		ExcelSAXUtls howto = new ExcelSAXUtls(opcPackage);
+		ExcelSAXUtils howto = new ExcelSAXUtils(opcPackage);
 		howto.processAllSheets();
 	}
 

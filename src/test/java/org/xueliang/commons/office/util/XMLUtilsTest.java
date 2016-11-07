@@ -1,4 +1,4 @@
-package org.xueliang.util;
+package org.xueliang.commons.office.util;
 
 import static org.junit.Assert.assertThat;
 
@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.xueliang.commons.office.util.XMLUtils;
 
 public class XMLUtilsTest {
 	

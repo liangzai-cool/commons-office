@@ -1,4 +1,4 @@
-package org.xueliang.util;
+package org.xueliang.commons.office.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,10 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import vms.common.web.HttpUtils;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 public class TextUtils {
 	
@@ -21,8 +24,9 @@ public class TextUtils {
 	 * @throws Exception 
 	 */
 	public static Map<String, String> toMapFromUrl(String url) throws Exception {
-	    HttpUtils httpUtils = new HttpUtils();
-	    String content = httpUtils.getUrlContent(url);
+	    HttpGet httpGet = new HttpGet(url);
+	    CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+	    String content = EntityUtils.toString(httpclient.execute(httpGet).getEntity());
 	    return toMap(content);
 	}
 	

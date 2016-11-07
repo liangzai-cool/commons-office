@@ -1,4 +1,4 @@
-package org.xueliang.util;
+package org.xueliang.commons.office.util;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

@@ -1,4 +1,4 @@
-package org.xueliang.util;
+package org.xueliang.commons.office.util;
 
 import java.util.Iterator;
 import java.util.List;

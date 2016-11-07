@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
-package org.xueliang.util;
+package org.xueliang.commons.office.util;
 
 import java.io.InputStream;
 
@@ -39,7 +39,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * XSSF and SAX (Event API)
  */
-public class ExcelSAXUtls {
+public class ExcelSAXUtils {
 
 
 	int countrows = 0;
@@ -54,7 +54,7 @@ public class ExcelSAXUtls {
 		BOOL, ERROR, FORMULA, INLINESTR, SSTINDEX, NUMBER,
 	}
 
-	public ExcelSAXUtls(OPCPackage opcPackage) {
+	public ExcelSAXUtils(OPCPackage opcPackage) {
 		this.opcPackage = opcPackage;
 	}
 

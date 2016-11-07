@@ -29,6 +29,30 @@ public class ExcelUtils {
 	private final static String EXT_XLS = ".xls";
 	private final static String EXT_XLSX = ".xlsx";
 	private final static DecimalFormat df = new DecimalFormat("00");
+	private Workbook workbook;
+	
+	public ExcelUtils(String pathname) throws IOException {
+	    this(new File(pathname));
+    }
+	
+    public ExcelUtils(File file) throws IOException {
+        String fileName = file.getName();
+        InputStream inputStream = new FileInputStream(file);
+        if (fileName.endsWith(EXT_XLSX)) {
+            workbook = new XSSFWorkbook(inputStream);
+        } else if (fileName.endsWith(EXT_XLS)) {
+            workbook = new HSSFWorkbook(inputStream);
+        }
+        inputStream.close();
+        if (workbook == null) {
+            throw new IllegalArgumentException("invalid excel: " + fileName);
+        }
+        workbook.close();
+    }
+    
+    public ExcelUtils(Workbook workbook) {
+        this.workbook = workbook;
+    }
 	
 	/**
 	 * 指定路径，将Excel转成JSONArray
@@ -48,8 +72,8 @@ public class ExcelUtils {
 	 * @throws IOException
 	 */
 	public static JSONArray toJSONArray(File file) throws IOException {
-		ExcelUtils excelUtils = new ExcelUtils();
-		return excelUtils.excelToJSONArray(file);
+		ExcelUtils excelUtils = new ExcelUtils(file);
+		return toJSONArray(excelUtils.workbook);
 	}
 	
 	/**
@@ -58,39 +82,15 @@ public class ExcelUtils {
 	 * @return
 	 */
 	public static JSONArray toJSONArray(Workbook workbook) {
-		ExcelUtils excelUtils = new ExcelUtils();
-		return excelUtils.excelToJSONArray(workbook);
+		ExcelUtils excelUtils = new ExcelUtils(workbook);
+		return excelUtils.toJSONArray();
 	}
 	
 	/**
 	 * 将Excel转成JSONArray
-	 * @param inputStream
-	 * @return
-	 * @throws IOException
-	 */
-	public JSONArray excelToJSONArray(File file) throws IOException {
-		String fileName = file.getName();
-		Workbook workbook = null;
-		InputStream inputStream = new FileInputStream(file);
-		if (fileName.endsWith(EXT_XLSX)) {
-			workbook = new XSSFWorkbook(inputStream);  
-		} else if (fileName.endsWith(EXT_XLS)) {
-			workbook = new HSSFWorkbook(inputStream);
-		}
-		inputStream.close();
-		if (workbook == null) {
-			throw new IllegalArgumentException("invalid excel: " + fileName);
-		}
-		workbook.close();
-		return excelToJSONArray(workbook);
-	}
-	
-	/**
-	 * 将Excel转成JSONArray
-	 * @param workbook
 	 * @return
 	 */
-	public JSONArray excelToJSONArray(Workbook workbook) {
+	public JSONArray toJSONArray() {
 		JSONArray jsonExcel = new JSONArray();
 		for (int i = 0, len = workbook.getNumberOfSheets(); i < len; i++) {
 			Sheet sheet = workbook.getSheetAt(i);

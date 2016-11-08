@@ -214,4 +214,17 @@ public class ExcelUtils {
 		}
 		return cell.getCellType();
 	}
+	
+	/**
+     * 给指定单元格设置值
+     * @param sheetnum
+     * @param rownum
+     * @param cellnum
+     * @param value
+     * @return
+     */
+    public boolean setValue(int sheetnum, int rownum, int cellnum, Object value) {
+        workbook.getSheetAt(sheetnum).getRow(rownum).getCell(cellnum).setCellValue((String) value);
+        return true;
+    }
 }

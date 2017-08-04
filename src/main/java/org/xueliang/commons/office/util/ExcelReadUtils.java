@@ -21,21 +21,21 @@ import org.json.JSONArray;
  * @author XueLiang
  * @since 2016-03-26 01:38
  */
-public class ExcelUtils {
+public class ExcelReadUtils {
 	
 	/** 用来记录日志 **/
-	private final static Log log = LogFactory.getLog(ExcelUtils.class);
+	private final static Log log = LogFactory.getLog(ExcelReadUtils.class);
 	
 	private final static String EXT_XLS = ".xls";
 	private final static String EXT_XLSX = ".xlsx";
 	private final static DecimalFormat df = new DecimalFormat("00");
 	private Workbook workbook;
 	
-	public ExcelUtils(String pathname) throws IOException {
+	public ExcelReadUtils(String pathname) throws IOException {
 	    this(new File(pathname));
     }
 	
-    public ExcelUtils(File file) throws IOException {
+    public ExcelReadUtils(File file) throws IOException {
         String fileName = file.getName();
         InputStream inputStream = new FileInputStream(file);
         if (fileName.endsWith(EXT_XLSX)) {
@@ -50,7 +50,7 @@ public class ExcelUtils {
         workbook.close();
     }
     
-    public ExcelUtils(Workbook workbook) {
+    public ExcelReadUtils(Workbook workbook) {
         this.workbook = workbook;
     }
 	
@@ -72,7 +72,7 @@ public class ExcelUtils {
 	 * @throws IOException
 	 */
 	public static JSONArray toJSONArray(File file) throws IOException {
-		ExcelUtils excelUtils = new ExcelUtils(file);
+		ExcelReadUtils excelUtils = new ExcelReadUtils(file);
 		return toJSONArray(excelUtils.workbook);
 	}
 	
@@ -82,7 +82,7 @@ public class ExcelUtils {
 	 * @return
 	 */
 	public static JSONArray toJSONArray(Workbook workbook) {
-		ExcelUtils excelUtils = new ExcelUtils(workbook);
+		ExcelReadUtils excelUtils = new ExcelReadUtils(workbook);
 		return excelUtils.toJSONArray();
 	}
 	
